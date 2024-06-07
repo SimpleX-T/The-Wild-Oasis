@@ -142,6 +142,15 @@ img {
 	filter: grayscale(var(--image-grayscale)) opacity(var(--image-opacity));
 }
 
+/* @keyframes openModal {
+	from {
+		transform: scale(0.2);
+	}
+	to {
+		transform: scale(1);
+	}
+} */
+
 /*
 FOR DARK MODE
 
