@@ -6,6 +6,7 @@ export function useOutsideClick(handler, bubbleCapture = true) {
 	useEffect(
 		function () {
 			function handleClick(e) {
+				// console.log(e.target);
 				if (ref.current && !ref.current.contains(e.target)) {
 					handler();
 				}

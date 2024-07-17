@@ -1,7 +1,8 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { HiEllipsisVertical } from "react-icons/hi2";
 import styled from "styled-components";
+import { useOutsideClick } from "../hooks/useOutsideClick";
 
 const Menu = styled.div`
 	display: flex;
@@ -35,9 +36,19 @@ const StyledList = styled.ul`
 	box-shadow: var(--shadow-md);
 	border-radius: var(--border-radius-md);
 
-	right: ${(props) => props.position.x}px;
-	top: ${(props) => props.position.y}px;
+	right: ${(props) => props.$position.x}px;
+	top: ${(props) => props.$position.y}px;
 `;
+
+// const StyledList = styled.ul`
+// 	position: fixed;
+
+// 	background-color: var(--color-grey-0);
+// 	box-shadow: var(--shadow-md);
+// 	border-radius: var(--border-radius-md);
+
+// 	${({ position }) => position}
+// `;
 
 const StyledButton = styled.button`
 	width: 100%;
@@ -54,6 +65,7 @@ const StyledButton = styled.button`
 
 	&:hover {
 		background-color: var(--color-grey-50);
+		color: var(--color-grey-900);
 	}
 
 	& svg {
@@ -65,6 +77,105 @@ const StyledButton = styled.button`
 `;
 
 export const MenusContext = createContext();
+
+// function Menus({ children }) {
+// 	const [position, setPosition] = useState(null);
+// 	const [openId, setOpenId] = useState("");
+// 	const close = () => setOpenId("");
+// 	const open = setOpenId;
+
+// 	return (
+// 		<MenusContext.Provider
+// 			value={{ openId, close, open, position, setPosition }}>
+// 			{children}
+// 		</MenusContext.Provider>
+// 	);
+// }
+
+// function Toggle({ id }) {
+// 	const { openId, open, close, setPosition } = useContext(MenusContext);
+// 	const buttonRef = useRef(null);
+
+// 	function handleClick() {
+// 		if (openId === id) {
+// 			close();
+// 		} else {
+// 			open(id);
+// 			updatePosition();
+// 		}
+// 	}
+
+// 	function updatePosition() {
+// 		if (buttonRef.current) {
+// 			const rect = buttonRef.current.getBoundingClientRect();
+// 			setPosition({
+// 				right: `${window.innerWidth - rect.right}px`,
+// 				top: `${rect.bottom + 8}px`,
+// 			});
+// 		}
+// 	}
+
+// 	useEffect(() => {
+// 		window.addEventListener("resize", updatePosition);
+// 		window.addEventListener("scroll", updatePosition);
+
+// 		return () => {
+// 			window.removeEventListener("resize", updatePosition);
+// 			window.removeEventListener("scroll", updatePosition);
+// 		};
+// 	}, []);
+
+// 	return (
+// 		<StyledToggle
+// 			onClick={handleClick}
+// 			ref={buttonRef}>
+// 			<HiEllipsisVertical />
+// 		</StyledToggle>
+// 	);
+// }
+
+// function List({ children, id }) {
+// 	const { openId, position } = useContext(MenusContext);
+// 	const listRef = useRef(null);
+
+// 	useEffect(() => {
+// 		function adjustPosition() {
+// 			if (listRef.current && position) {
+// 				const rect = listRef.current.getBoundingClientRect();
+// 				const viewportHeight = window.innerHeight;
+// 				const viewportWidth = window.innerWidth;
+
+// 				let newPosition = { ...position };
+
+// 				if (rect.bottom > viewportHeight) {
+// 					newPosition.top = `${viewportHeight - rect.height - 10}px`;
+// 				}
+
+// 				if (rect.right > viewportWidth) {
+// 					newPosition.right = "10px";
+// 				}
+
+// 				listRef.current.style.top = newPosition.top;
+// 				listRef.current.style.right = newPosition.right;
+// 			}
+// 		}
+
+// 		if (id === openId) {
+// 			adjustPosition();
+// 		}
+// 	}, [id, openId, position]);
+
+// 	if (id !== openId) return null;
+
+// 	return createPortal(
+// 		<StyledList
+// 			position={position}
+// 			ref={listRef}>
+// 			{children}
+// 		</StyledList>,
+// 		document.body
+// 	);
+// }
 
 function Menus({ children }) {
 	const [position, setPosition] = useState(null);
@@ -83,6 +194,12 @@ function Menus({ children }) {
 function Toggle({ id }) {
 	const { openId, open, close, setPosition } = useContext(MenusContext);
 
+	// const [rect, setRect] = useState(null);
+
+	// useEffect(function () {
+	// 	document.addEventListener("scroll", setRect);
+	//  },[rect]);
+
 	function handleClick(e) {
 		const rect = e.target.closest("button").getBoundingClientRect();
 		setPosition({
@@ -100,20 +217,33 @@ function Toggle({ id }) {
 }
 
 function List({ children, id }) {
-	const { openId, position } = useContext(MenusContext);
+	const { openId, position, close } = useContext(MenusContext);
+	const ref = useOutsideClick(close, true);
 
 	if (id !== openId) return null;
 
 	return createPortal(
-		<StyledList position={position}>{children}</StyledList>,
+		<StyledList
+			ref={ref}
+			$position={position}>
+			{children}
+		</StyledList>,
 		document.body
 	);
 }
 
-function Button({ children }) {
+function Button({ children, icon, onClick }) {
+	const { close } = useContext(MenusContext);
+	function handleClick() {
+		close();
+		onClick();
+	}
 	return (
 		<li>
-			<StyledButton>{children}</StyledButton>
+			<StyledButton onClick={handleClick}>
+				<span>{icon}</span>
+				{children}
+			</StyledButton>
 		</li>
 	);
 }
