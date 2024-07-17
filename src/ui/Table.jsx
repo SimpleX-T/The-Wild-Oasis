@@ -31,6 +31,7 @@ const StyledRow = styled(CommonRow)`
 	}
 `;
 const StyledBody = styled.section`
+	padding-inline: 10px;
 	margin: 0.4rem 0;
 `;
 const Footer = styled.footer`

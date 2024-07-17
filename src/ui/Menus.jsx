@@ -179,26 +179,28 @@ export const MenusContext = createContext();
 
 function Menus({ children }) {
 	const [position, setPosition] = useState(null);
-	const [openId, setOpenId] = useState("");
+	const [openId, setOpenId] = useState(null);
 	const close = () => setOpenId("");
 	const open = setOpenId;
 
+	useEffect(
+		function () {
+			console.log(openId);
+		},
+		[openId]
+	);
+
 	return (
 		<MenusContext.Provider
-			value={{ openId, close, open, position, setPosition }}>
+			value={{ openId, close, open, position, setPosition, setOpenId }}>
 			{children}
 		</MenusContext.Provider>
 	);
 }
 
 function Toggle({ id }) {
-	const { openId, open, close, setPosition } = useContext(MenusContext);
-
-	// const [rect, setRect] = useState(null);
-
-	// useEffect(function () {
-	// 	document.addEventListener("scroll", setRect);
-	//  },[rect]);
+	const { openId, open, close, setPosition, setOpenId } =
+		useContext(MenusContext);
 
 	function handleClick(e) {
 		const rect = e.target.closest("button").getBoundingClientRect();
@@ -206,7 +208,8 @@ function Toggle({ id }) {
 			x: window.innerWidth - rect.width - rect.x,
 			y: rect.y + rect.height + 8,
 		});
-		openId === "" || openId !== id ? open(id) : close();
+
+		setOpenId((prev) => (prev ? null : id));
 	}
 
 	return (
@@ -236,7 +239,7 @@ function Button({ children, icon, onClick }) {
 	const { close } = useContext(MenusContext);
 	function handleClick() {
 		close();
-		onClick();
+		onClick?.();
 	}
 	return (
 		<li>
