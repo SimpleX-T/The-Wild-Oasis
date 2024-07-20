@@ -31,15 +31,67 @@ function CabinTable() {
 
 	if (isLoading) return <Spinner />;
 
+	// FILTER
+
 	const filterValue = searchParams.get("discount") || "all";
 
 	let filteredCabins;
 
-	if (filterValue === "all") filteredCabins = cabins;
-	if (filterValue === "no-discount")
-		filteredCabins = cabins.filter((cabin) => cabin.discount === 0);
-	if (filterValue === "with-discount")
-		filteredCabins = cabins.filter((cabin) => cabin.discount > 0);
+	switch (filterValue) {
+		case "all":
+			filteredCabins = cabins;
+			break;
+		case "no-discount":
+			filteredCabins = cabins.filter((cabin) => cabin.discount === 0);
+			break;
+		case "with-discount":
+			filteredCabins = cabins.filter((cabin) => cabin.discount > 0);
+			break;
+		default:
+			filteredCabins = cabins;
+			break;
+	}
+
+	// SORT
+	git;
+	const sortedValue = searchParams.get("sortBy") || "name-asc";
+	let sortedCabins;
+
+	switch (sortedValue) {
+		case "name-asc":
+			sortedCabins = filteredCabins.sort((a, b) =>
+				a.name.localeCompare(b.name)
+			);
+			break;
+		case "name-desc":
+			sortedCabins = filteredCabins.sort((a, b) =>
+				b.name.localeCompare(a.name)
+			);
+			break;
+		case "regularPrice-asc":
+			sortedCabins = filteredCabins.sort(
+				(a, b) => a.regularPrice - b.regularPrice
+			);
+			break;
+		case "regularPrice-desc":
+			sortedCabins = filteredCabins.sort(
+				(a, b) => b.regularPrice - a.regularPrice
+			);
+			break;
+		case "maxCapacity-asc":
+			sortedCabins = filteredCabins.sort(
+				(a, b) => a.maxCapacity - b.maxCapacity
+			);
+			break;
+		case "maxCapacity-desc":
+			sortedCabins = filteredCabins.sort(
+				(a, b) => b.maxCapacity - a.maxCapacity
+			);
+			break;
+		default:
+			sortedCabins = filteredCabins;
+			break;
+	}
 
 	return (
 		<>
