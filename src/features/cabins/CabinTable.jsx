@@ -30,6 +30,7 @@ function CabinTable() {
 	const [searchParams] = useSearchParams();
 
 	if (isLoading) return <Spinner />;
+	if (!cabins.length) return <Empty resourceName='cabins'/>;
 
 	// FILTER
 
@@ -53,7 +54,7 @@ function CabinTable() {
 	}
 
 	// SORT
-	git;
+
 	const sortedValue = searchParams.get("sortBy") || "name-asc";
 	let sortedCabins;
 
