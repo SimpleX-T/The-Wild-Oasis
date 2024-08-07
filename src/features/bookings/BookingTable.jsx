@@ -2,13 +2,71 @@ import BookingRow from "./BookingRow";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import Empty from "../../ui/Empty";
-// import { useEffect, useState } from "react";
-// import { getBookings } from "../../services/apiBookings";
+import Spinner from "../../ui/Spinner";
+import { useBookings } from "./useBookings";
+import { useSearchParams } from "react-router-dom";
 
 function BookingTable() {
-	const bookings = [];
+	const { bookings, isLoading } = useBookings();
 
-	if (!bookings.length) {
+	const [searchParams] = useSearchParams();
+
+	const filterValue = searchParams.get("status") || "all";
+
+	let filteredBookings;
+
+	switch (filterValue) {
+		case "all":
+			filteredBookings = bookings;
+			break;
+		case "checked-in":
+			filteredBookings = bookings?.filter(
+				(booking) => booking.status === "checked-in"
+			);
+			break;
+		case "checked-out":
+			filteredBookings = bookings?.filter(
+				(booking) => booking.status === "checked-out"
+			);
+			break;
+		default:
+			filteredBookings = bookings;
+	}
+
+	const sortValue = searchParams.get("sortBy") || "startDate-desc";
+	let sortedBookings;
+
+	switch (sortValue) {
+		case "startDate-desc":
+			sortedBookings = filteredBookings?.sort(
+				(a, b) => b.startDate - a.startDate
+			);
+			break;
+		case "startDate-asc":
+			sortedBookings = filteredBookings?.sort(
+				(a, b) => a.startDate - b.startDate
+			);
+			break;
+		case "totalPrice-desc":
+			sortedBookings = filteredBookings?.sort(
+				(a, b) => b.totalPrice - a.totalPrice
+			);
+			break;
+		case "totalPrice-asc":
+			sortedBookings = filteredBookings?.sort(
+				(a, b) => a.totalPrice - b.totalPrice
+			);
+			break;
+		default:
+			sortedBookings = filteredBookings;
+			break;
+	}
+
+	if (isLoading) {
+		return <Spinner />;
+	}
+
+	if (!bookings?.length) {
 		return <Empty resourceName='bookings' />;
 	}
 

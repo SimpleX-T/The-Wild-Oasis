@@ -30,7 +30,7 @@ function CabinTable() {
 	const [searchParams] = useSearchParams();
 
 	if (isLoading) return <Spinner />;
-	if (!cabins.length) return <Empty resourceName='cabins'/>;
+	if (!cabins?.length) return <Empty resourceName='cabins' />;
 
 	// FILTER
 
@@ -107,7 +107,7 @@ function CabinTable() {
 						<div></div>
 					</Table.Header>
 					<Table.Body
-						data={filteredCabins}
+						data={sortedCabins}
 						render={(cabin) => (
 							<CabinRow
 								cabin={cabin}
