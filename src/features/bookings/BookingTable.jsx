@@ -5,9 +5,10 @@ import Empty from "../../ui/Empty";
 import Spinner from "../../ui/Spinner";
 import { useBookings } from "./useBookings";
 import { useSearchParams } from "react-router-dom";
+import Pagination from "../../ui/Pagination";
 
 function BookingTable() {
-	const { bookings, isLoading } = useBookings();
+	const { bookings, isLoading, count } = useBookings();
 
 	const [searchParams] = useSearchParams();
 
@@ -91,6 +92,9 @@ function BookingTable() {
 						/>
 					)}
 				/>
+				<Table.Footer>
+					<Pagination count={count} />
+				</Table.Footer>
 			</Table>
 		</Menus>
 	);
